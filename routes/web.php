@@ -6,6 +6,7 @@ use App\Models\Ideas;
 use App\Models\User;
 use App\Models\Post;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BookController; // Gi-move nako diri sa taas para limpyo
 
 Route::view('/', 'welcome', [
     'greeting' => 'Hello, World!',
@@ -21,47 +22,36 @@ Route::view('/', 'welcome', [
 Route::view('/about', 'about');
 Route::view('/contact', 'contact');
 
-//index
-Route::get('/posts', function(){
+// --- POST ROUTES ---
+Route::get('/posts', function () {
     $posts = Post::all();
-
-    return view('posts.index', [
-        'posts' => $posts,
-    ]);
+    return view('posts.index', ['posts' => $posts]);
 });
 
-//show
 Route::get('/posts/{post}', function (Post $post) {
-    return view('posts.show', [
-        'post' => $post,
-    ]);
+    return view('posts.show', ['post' => $post]);
 });
 
-//edit
 Route::get('/posts/{post}/edit', function (Post $post) {
-    return view('posts.edit', [
-        'post' => $post,
-    ]);
-}
-);
+    return view('posts.edit', ['post' => $post]);
+});
 
-//update
 Route::patch('/posts/{post}', function (Post $post) {
     $post->update([
         'description' => request('description'),
         'updated_at' => now(),
     ]);
+    return redirect('/posts/' . $post->id);
+});
 
-    return redirect('/posts' . '/' . $post->id);
-}
-);
-
-
-
-//user registration routes
+// --- USER REGISTRATION ROUTES ---
 Route::get('/register', [UserController::class, 'index']);
 Route::get('/register/create', [UserController::class, 'create']);
 Route::post('/register', [UserController::class, 'store']);
 Route::get('/register/show/{user}', [UserController::class, 'show']);
 Route::patch('/register/update/{user}', [UserController::class, 'update']);
 Route::delete('/register/delete/{user}', [UserController::class, 'destroy']);
+
+// --- BOOK MANAGEMENT ROUTES ---
+// Kini nga line nag-cover na sa Index, Create, Store, Show, Edit, Update, ug Destroy
+Route::resource('books', BookController::class);
