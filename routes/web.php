@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Models\Ideas;
+use App\Models\User;
 use App\Models\Post;
+use App\Http\Controllers\UserController;
 
 Route::view('/', 'welcome', [
     'greeting' => 'Hello, World!',
@@ -18,35 +20,6 @@ Route::view('/', 'welcome', [
 
 Route::view('/about', 'about');
 Route::view('/contact', 'contact');
-
-Route::get('/formtest', function(){
-    $posts = Post::all();
-
-    return view('formtest',[
-        'posts' => $posts,
-    ]);
-});
-
-Route::post('/formtest', function(){
-    Post::create([
-        'description' => request('description'),
-    ]);
-
-    return redirect('/formtest');
-});
-
-Route::delete('/formtest/{id}', function ($id) {
-    Post::findOrFail($id)->delete();
-
-    return redirect('/formtest');
-});
-
-Route::get('/delete', function(){
-    Post::truncate();  
-
-    return redirect('/formtest');
-});
-
 
 //index
 Route::get('/posts', function(){
@@ -82,3 +55,13 @@ Route::patch('/posts/{post}', function (Post $post) {
     return redirect('/posts' . '/' . $post->id);
 }
 );
+
+
+
+//user registration routes
+Route::get('/register', [UserController::class, 'index']);
+Route::get('/register/create', [UserController::class, 'create']);
+Route::post('/register', [UserController::class, 'store']);
+Route::get('/register/show/{user}', [UserController::class, 'show']);
+Route::patch('/register/update/{user}', [UserController::class, 'update']);
+Route::delete('/register/delete/{user}', [UserController::class, 'destroy']);
